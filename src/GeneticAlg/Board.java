@@ -10,9 +10,9 @@ import javafx.scene.shape.Line;
 import java.util.ArrayList;
 
 public class Board {
+    private static final Color[] colors = {Color.BLACK, Color.BLUE, Color.RED, Color.GREEN, Color.GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK};
     private BoardConfig info;
     private ArrayList<Route> routes = new ArrayList<>();
-    private static final Color[] colors = {Color.BLACK, Color.BLUE, Color.RED, Color.GREEN, Color.GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK};
     public Board(BoardConfig info){
         this.info = info;
         var intRoutes = info.getRoutes();
@@ -25,8 +25,8 @@ public class Board {
     public Board(Board other){
         this.info = other.info;
         this.routes = new ArrayList<>();
-        for(int i = 0; i < other.routes.size(); i++){
-
+        for(var route : other.routes){
+            routes.add(new Route(route));
         }
     }
 
