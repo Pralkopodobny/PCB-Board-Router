@@ -217,7 +217,7 @@ public class Segment {
 
     public int notOnBoard(int maxX, int maxY){
         if(start.onBoard(maxX, maxY) && end.onBoard(maxX, maxY)) return 0;
-        Point[] border = new Point[2];
+        Point[] sortedStartAndEnd = new Point[2];
         Point[] points = new Point[4];
         points[0] = start;
         points[1] = end;
@@ -225,36 +225,57 @@ public class Segment {
         if(direction.isVertical()){
             if(start.x < 0 || start.x >= maxX) return length;
             points[2] = new Point(start.x, 0);
-            border[0] = points[2];
+            sortedStartAndEnd[0] = start;
             points[3] = new Point(start.x, maxY);
-            border[1] = points[3];
+            sortedStartAndEnd[1] = end;
             Arrays.sort(points, vCompare);
-            Arrays.sort(border, vCompare);
+            Arrays.sort(sortedStartAndEnd, vCompare);
         }
         else{
             if(start.y < 0 || start.y >= maxX) return length;
             points[2] = new Point(0, start.y);
-            border[0] = points[2];
+            sortedStartAndEnd[0] = start;
             points[3] = new Point(maxX, start.y);
-            border[1] = points[3];
+            sortedStartAndEnd[1] = end;
             Arrays.sort(points, hCompare);
-            Arrays.sort(border, hCompare);
+            Arrays.sort(sortedStartAndEnd, hCompare);
         }
-        boolean ez = !start.onBoard(maxX, maxY) && !end.onBoard(maxX, maxY);
         if(direction.isVertical()){
-            if(ez){
-                return points[1].y - points[0].y + points[3].y - points[2].y;
+            if(!sortedStartAndEnd[0].onBoard(maxX, maxY)){
+                if(!sortedStartAndEnd[1].onBoard(maxX, maxY)){
+                    if(sortedStartAndEnd[0] == points[0] && sortedStartAndEnd[1] == points[3]){
+                        return points[1].y - points[0].y + points[3].y - points[2].y;
+                    }
+                    else{
+                        return length;
+                    }
+                }
+                else {
+                    return length - (points[2].y - points[1].y);
+                }
             }
-            else
-                return points[3].y - points[0].y - (border[1].y - border[0].y);
+            else{
+                return length - (points[2].y - points[1].y);
+            }
 
         }
         else{
-            if(ez){
-                return points[1].x - points[0].x + points[3].x - points[2].x;
+            if(!sortedStartAndEnd[0].onBoard(maxX, maxY)){
+                if(!sortedStartAndEnd[1].onBoard(maxX, maxY)){
+                    if(sortedStartAndEnd[0] == points[0] && sortedStartAndEnd[1] == points[3]){
+                        return points[1].x - points[0].x + points[3].x - points[2].x;
+                    }
+                    else{
+                        return length;
+                    }
+                }
+                else {
+                    return length - (points[2].x - points[1].x);
+                }
             }
-            else
-                return points[3].x - points[0].x - (border[1].x - border[0].x);
+            else{
+                return length - (points[2].x - points[1].x);
+            }
         }
 
     }
