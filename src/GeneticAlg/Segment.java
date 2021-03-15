@@ -1,8 +1,16 @@
 package GeneticAlg;
 
+import GeneticAlg.Comparators.HorizontalPointComparator;
+import GeneticAlg.Comparators.VerticalPointComparator;
+import javafx.scene.shape.Line;
+
+import java.awt.*;
 import java.awt.geom.Line2D;
+import java.util.Arrays;
 
 public class Segment {
+    private static VerticalPointComparator vCompare = new VerticalPointComparator();
+    private static HorizontalPointComparator hCompare = new HorizontalPointComparator();
 
     public enum Direction {
         UP,
@@ -45,37 +53,35 @@ public class Segment {
     }
 
     private int length;
-    private int x, y, x2, y2;
+    private Point start, end;
     private Direction direction;
 
+
     public Segment(int x, int y, int length, Direction direction){
-        this.x = x;
-        this.y = y;
+        start = new Point(x, y);
         this.length = length;
         this.direction = direction;
-        updateEnds();
+        end = createEnd();
     }
-    public void updateEnds(){
+    public Segment(Point start, int length, Direction direction){
+        this.start = new Point(start);
+        this.length = length;
+        this.direction = direction;
+        end = createEnd();
+    }
+    private Point createEnd(){
         switch(direction){
             case DOWN:{
-                x2 = x;
-                y2 = y+length;
-                break;
+                return new Point(start.x, start.y+length);
             }
             case UP:{
-                x2 = x;
-                y2 = y-length;
-                break;
+                return new Point(start.x, start.y-length);
             }
             case RIGHT:{
-                x2 = x + length;
-                y2 = y;
-                break;
+                return new Point(start.x + length, start.y);
             }
-            case LEFT:{
-                x2 = x-length;
-                y2 = y;
-                break;
+            default:{
+                return new Point(start.x - length, start.y);
             }
         }
     }
@@ -84,24 +90,12 @@ public class Segment {
         return length;
     }
 
-    public void setLength(int length) {
-        this.length = length;
-    }
-
     public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
+        return start.x;
     }
 
     public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
+        return start.y;
     }
 
     public Direction getDirection() {
@@ -112,20 +106,151 @@ public class Segment {
         this.direction = direction;
     }
 
+    public boolean contains(int x, int y){
+        return contains(new Point(x, y));
+    }
+    public boolean contains(Point p){
+        if(direction.isVertical()){
+            if(p.x != start.x) return false;
+            if(direction == Direction.UP){
+                return start.y >= p.y && p.y >= end.y;
+            }
+            else{
+                return start.y <= p.y && p.y <= end.y;
+            }
+        }
+        else {
+            if(p.y != start.y) return false;
+            if(direction == Direction.RIGHT){
+                return start.x <= p.x && p.x <= end.x;
+            }
+            else{
+                return start.x >= p.x && p.x >= end.x;
+            }
+        }
+    }
+
+
     public boolean collides(Segment other){
-        return Line2D.linesIntersect(x, y, x2, y2, other.x, other.y, other.x2, other.y2);
+        return Line2D.linesIntersect(start.x, start.y, end.x, end.y, other.getX(), other.getY(), other.getX2(), other.getY2());
     }
 
     public int getX2() {
-        return x2;
+        return end.x;
     }
 
     public int getY2() {
-        return y2;
+        return end.y;
+    }
+
+    public void shortenToPoint(Point p){
+        while (!p.equals(end)){
+            if(end.equals(start)) throw new IllegalArgumentException();
+            switch(direction){
+                case UP:
+                    end.y ++;
+                    length--;
+                    break;
+                case DOWN:
+                    end.y --;
+                    length--;
+                    break;
+                case RIGHT:
+                    end.x --;
+                    length--;
+                    break;
+                case LEFT:
+                    end.x ++;
+                    length--;
+                    break;
+            }
+        }
+    }
+
+    public void expandToPoint(Point p){
+        while (!p.equals(end)){
+            if(end.equals(start)) throw new IllegalArgumentException();
+            switch(direction){
+                case UP:
+                    end.y --;
+                    length++;
+                    break;
+                case DOWN:
+                    end.y ++;
+                    length++;
+                    break;
+                case RIGHT:
+                    end.x ++;
+                    length++;
+                    break;
+                case LEFT:
+                    end.x --;
+                    length++;
+                    break;
+            }
+        }
+    }
+
+    public Point getStart() {
+        return start;
+    }
+
+    public Point getEnd() {
+        return end;
     }
 
     @Override
     public String toString() {
-        return "(" +x+","+y+")->("+x2+","+y2+")";
+        return start + "->" + end;
     }
+
+    public Line draw(){
+        int scale = BoardConfig.PIXEL_SIZE;
+        return new Line(start.x*scale + scale, start.y * scale + scale, end.x * scale + scale, end.y * scale + scale);
+    }
+
+    public int notOnBoard(int maxX, int maxY){
+        if(start.onBoard(maxX, maxY) && end.onBoard(maxX, maxY)) return 0;
+        Point[] border = new Point[2];
+        Point[] points = new Point[4];
+        points[0] = start;
+        points[1] = end;
+        int result = 0;
+        if(direction.isVertical()){
+            if(start.x < 0 || start.x >= maxX) return length;
+            points[2] = new Point(start.x, 0);
+            border[0] = points[2];
+            points[3] = new Point(start.x, maxY);
+            border[1] = points[3];
+            Arrays.sort(points, vCompare);
+            Arrays.sort(border, vCompare);
+        }
+        else{
+            if(start.y < 0 || start.y >= maxX) return length;
+            points[2] = new Point(0, start.y);
+            border[0] = points[2];
+            points[3] = new Point(maxX, start.y);
+            border[1] = points[3];
+            Arrays.sort(points, hCompare);
+            Arrays.sort(border, hCompare);
+        }
+        boolean ez = !start.onBoard(maxX, maxY) && !end.onBoard(maxX, maxY);
+        if(direction.isVertical()){
+            if(ez){
+                return points[1].y - points[0].y + points[3].y - points[2].y;
+            }
+            else
+                return points[3].y - points[0].y - (border[1].y - border[0].y);
+
+        }
+        else{
+            if(ez){
+                return points[1].x - points[0].x + points[3].x - points[2].x;
+            }
+            else
+                return points[3].x - points[0].x - (border[1].x - border[0].x);
+        }
+
+    }
+
 }

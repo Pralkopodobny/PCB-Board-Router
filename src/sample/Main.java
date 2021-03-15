@@ -1,8 +1,6 @@
 package sample;
 
-import GeneticAlg.BoardConfig;
-import GeneticAlg.Route;
-import GeneticAlg.Segment;
+import GeneticAlg.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -11,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
+import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -24,18 +23,12 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 300, 275));
         BoardConfig config;
         try{
-            config = new BoardConfig("Assets/Zad0.txt");
-            System.out.println(config);
-            System.out.println(Segment.Direction.LEFT.getMaxDistance(1,2, 10, 4));
-            Route route = Route.createRandomRoute(3,3, 4,4, config);
-            System.out.println(route);
-            Group group = new Group();
-            for(int i = 0; i < route.segments.size(); i++){
-                Line line = new Line(route.segments.get(i).getX()*30, route.segments.get(i).getY()*30, route.segments.get(i).getX2()*30, route.segments.get(i).getY2()*30);
-                group.getChildren().add(line);
-            }
+            config = new BoardConfig("Assets/Zad3.txt");
+            Board b = new Board(config);
+            System.out.println(b.bad());
+            Group group = b.drawLines();
 
-            Scene scene = new Scene(group, 600, 300);
+            Scene scene = new Scene(group, 1000, 1000);
             primaryStage.setScene(scene);
 
         }
@@ -43,6 +36,8 @@ public class Main extends Application {
             System.out.println("No config file");
             System.exit(404);
         }
+
+        System.out.println(Line2D.linesIntersect(1, 1, 1, 3, 2, 2, 5, 2));
 
         primaryStage.show();
 
