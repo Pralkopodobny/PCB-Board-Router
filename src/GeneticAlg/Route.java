@@ -9,21 +9,29 @@ import java.util.Random;
 
 
 public class Route {
+    private static final int MAX_NUMBER_OF_MOVES = 500;
     static Random rng = new Random();
-//    private int x, y, x2, y2;
     private Point start, end;
     private BoardConfig info;
-    private static final int MAX_NUMBER_OF_MOVES = 500;
     public ArrayList<Segment> segments = new ArrayList<>();
+
+    private Route(){};
+
+    public Route(Route other){
+        this.info = other.info;
+        this.start = new Point(other.start);
+        this.end = new Point(other.end);
+        this.segments = new ArrayList<>();
+        for (var segment: other.segments) {
+            this.segments.add(new Segment(segment));
+        }
+    }
+
     public static Route createRandomRoute(int x, int y, int x2, int y2, BoardConfig info){
 
         Route route = new Route();
         route.info = info;
-//        route.x = x;
-//        route.y = y;
         route.start = new Point(x,y);
-//        route.x2 = x2;
-//        route.y2 = y2;
         route.end = new Point(x2, y2);
         ArrayList<Segment> segments = new ArrayList<>();
 

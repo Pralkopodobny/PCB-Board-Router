@@ -69,6 +69,12 @@ public class Segment {
         this.direction = direction;
         end = createEnd();
     }
+    public Segment(Segment other){
+        this.length = other.length;
+        this.direction = other.direction;
+        this.start = new Point(other.start);
+        this.end = new Point(other.end);
+    }
     private Point createEnd(){
         switch(direction){
             case DOWN:{

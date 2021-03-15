@@ -22,6 +22,14 @@ public class Board {
         }
     }
 
+    public Board(Board other){
+        this.info = other.info;
+        this.routes = new ArrayList<>();
+        for(int i = 0; i < other.routes.size(); i++){
+
+        }
+    }
+
     @Override
     public String toString() {
         return "Board{" +
@@ -37,7 +45,6 @@ public class Board {
             Line[] lines = routes.get(i).drawLines();
             for(int j = 0; j < lines.length; j++) {
                 lines[j].setStroke(colors[i%colors.length]);
-
             }
             group.getChildren().addAll(lines);
             Point[] temp1 = new Point[]{routes.get(i).getStart(), routes.get(i).getEnd()};

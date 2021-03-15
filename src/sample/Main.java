@@ -27,6 +27,7 @@ public class Main extends Application {
             Board b = new Board(config);
             System.out.println(b.bad());
             Group group = b.drawLines();
+            Population p = new Population(config);
 
             Scene scene = new Scene(group, 1000, 1000);
             primaryStage.setScene(scene);
