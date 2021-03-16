@@ -277,7 +277,78 @@ public class Segment {
                 return length - (points[2].x - points[1].x);
             }
         }
-
     }
+
+    public Point[] collisionPoints(Segment other){
+        if(!collides(other)) return null;
+
+        if(direction.isVertical() != other.direction.isVertical()){
+            if(direction.isVertical()){
+                return new Point[]{new Point(start.x, other.start.y)};
+            }
+            else {
+                return new Point[]{new Point(other.start.x, start.y)};
+            }
+        }
+        else {
+            Segment other2;
+            other2 = direction==other.direction?other:other.getReverse();
+            if(contains(other2.start)){
+                if(contains(other2.end)){
+                    return direction.isVertical()?pointsBetweenVertical(other2.getY(), other2.getY2(), other2.getX()):
+                            pointsBetweenHorizontal(other2.getX(), other2.getX2(), other2.getY());
+                }
+                else{
+                    return direction.isVertical()?pointsBetweenVertical(other2.getY(), getY2(), getX()):
+                            pointsBetweenHorizontal(other2.getX(), getX2(), getY());
+                }
+            }
+            else{
+                return direction.isVertical()?pointsBetweenVertical(getY(), other2.getY2(), getX()):
+                        pointsBetweenHorizontal(getX(), other2.getX2(), getY());
+            }
+        }
+    }
+
+    public Segment getReverse(){
+        return new Segment(end, length, direction.reverse());
+    }
+
+    private Point[] pointsBetweenHorizontal(int x1, int x2, int y){
+        int min, max, size;
+        if(x1<x2){
+            min = x1;
+            max = x2;
+        }
+        else{
+            min = x2;
+            max = x1;
+        }
+        size = max-min + 1;
+        Point[] points = new Point[size];
+        for(int i = 0; i < size; i++){
+            points[i] = new Point(min+i, y);
+        }
+        return points;
+    }
+
+    private Point[] pointsBetweenVertical(int y1, int y2, int x){
+        int min, max, size;
+        if(y1<y2){
+            min = y1;
+            max = y2;
+        }
+        else{
+            min = y2;
+            max = y1;
+        }
+        size = max-min + 1;
+        Point[] points = new Point[size];
+        for(int i = 0; i < size; i++){
+            points[i] = new Point(x, min+i);
+        }
+        return points;
+    }
+
 
 }
