@@ -274,4 +274,101 @@ public class Route {
         }
         return count;
     }
+
+    public void simpleMutation(int index, int force){
+        Segment mutated = segments.get(index), newPrev, newNext;
+        if(mutated.getDirection().isVertical()){
+            mutated.moveByVector(force, 0);
+        }
+        else{
+            mutated.moveByVector(0, force);
+        }
+        Segment prev = index==0?null:segments.get(index - 1);
+        newPrev = prev==null||prev.getStart().equals(mutated.getStart())?null:
+                (prev.getDirection().isVertical()?Segment.getVerticalSegment(prev.getStart(), mutated.getStart()):
+                        Segment.getHorizontalSegment(prev.getStart(), mutated.getStart()));
+        if(prev == null){
+            newPrev = mutated.getDirection().isVertical()?
+                    Segment.getHorizontalSegment(start, mutated.getStart()):
+                    Segment.getVerticalSegment(start, mutated.getStart());
+        }
+        else{
+            newPrev = prev.getDirection().isVertical()?
+                    Segment.getVerticalSegment(prev.getStart(), mutated.getStart()):
+                    Segment.getHorizontalSegment(prev.getStart(), mutated.getStart());
+        }
+        Segment next = index==segments.size() - 1?null:segments.get(index + 1);
+        if(next == null){
+            newNext = mutated.getDirection().isVertical()?
+                    Segment.getHorizontalSegment(mutated.getEnd(), end):
+                    Segment.getVerticalSegment(mutated.getEnd(), end);
+        }
+        else{
+            newNext = next.getDirection().isVertical()?
+                    Segment.getVerticalSegment(mutated.getEnd(), next.getEnd()):
+                    Segment.getHorizontalSegment(mutated.getEnd(), next.getEnd());
+        }
+        int offset = 0;
+        if(prev != null){
+            segments.remove(index - 1);
+            if(newPrev != null)
+                segments.add(index - 1, newPrev);
+            else
+                offset -=1;
+        }
+        if(next != null){
+            segments.remove(index + 1 + offset);
+            if(newNext != null)
+                segments.add(index + 1 + offset, newNext);
+        }
+        if(prev == null && newPrev != null){
+            segments.add(0, newPrev);
+        }
+        if(next == null && newNext != null){
+            segments.add(newNext);
+        }
+        fix();
+
+    }
+
+    public void fix(){
+        int i = fixFirstFrom(0);
+        while (i != -1){
+            i = fixFirstFrom(i);
+        }
+    }
+    //Returns index of fixed segment. When nothing fixed returns -1
+    private int fixFirstFrom(int index){
+        for(int i = index; i + 1 < segments.size(); i++){
+            if(segments.get(i).getDirection().isVertical() == segments.get(i + 1).getDirection().isVertical()){
+                    Segment fixedSegment = segments.get(i).getDirection().isVertical()?
+                            Segment.getVerticalSegment(segments.get(i).getStart(), segments.get(i+1).getEnd()):
+                            Segment.getHorizontalSegment(segments.get(i).getStart(), segments.get(i+1).getEnd());
+
+                    if(fixedSegment != null){
+                        segments.add(i, fixedSegment);
+                        segments.remove(i+1);
+                        segments.remove(i+1);
+                        return i;
+                    }
+                    else{
+                        segments.remove(i);
+                        segments.remove(i);
+                        return i;
+                    }
+                }
+            }
+
+        return -1;
+    }
+
+    public static Route createTestRoute(ArrayList<Segment> segments){
+        Route r = new Route();
+        if(segments == null || segments.size() < 1) throw new IllegalArgumentException();
+        r.segments = segments;
+        r.start = new Point(segments.get(0).getStart());
+        r.end = new Point(segments.get(segments.size() - 1).getEnd());
+        return r;
+    }
 }
+
