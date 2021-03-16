@@ -7,6 +7,7 @@ import javafx.scene.shape.Line;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Segment {
     private static VerticalPointComparator vCompare = new VerticalPointComparator();
@@ -55,7 +56,7 @@ public class Segment {
     private int length;
     private Point start, end;
     private Direction direction;
-
+    private Segment(){};
 
     public Segment(int x, int y, int length, Direction direction){
         start = new Point(x, y);
@@ -75,6 +76,40 @@ public class Segment {
         this.start = new Point(other.start);
         this.end = new Point(other.end);
     }
+
+    public static Segment getVerticalSegment(Point start, Point end){
+        assert (start.x == end.x);
+        if(start.equals(end)) return null;
+        Segment segment = new Segment();
+        segment.start = new Point(start);
+        segment.end = new Point(end);
+        segment.length = end.y - start.y;
+        if(segment.length < 0){
+            segment.length *=-1;
+            segment.direction = Direction.UP;
+        }
+        else{
+            segment.direction = Direction.DOWN;
+        }
+        return segment;
+    }
+    public static Segment getHorizontalSegment(Point start, Point end){
+        assert (start.y == end.y);
+        if(start.equals(end)) return null;
+        Segment segment = new Segment();
+        segment.start = new Point(start);
+        segment.end = new Point(end);
+        segment.length = end.x - start.x;
+        if(segment.length < 0){
+            segment.length *=-1;
+            segment.direction = Direction.LEFT;
+        }
+        else{
+            segment.direction = Direction.RIGHT;
+        }
+        return segment;
+    }
+
     private Point createEnd(){
         switch(direction){
             case DOWN:{
@@ -207,7 +242,7 @@ public class Segment {
 
     @Override
     public String toString() {
-        return start + "->" + end;
+        return start + "->" + end +"("+length+")";
     }
 
     public Line draw(){
@@ -310,6 +345,32 @@ public class Segment {
         }
     }
 
+    public int collisionPointsCount(Segment other){
+        if(!collides(other)) return 0;
+
+        if(direction.isVertical() != other.direction.isVertical()){
+            return 1;
+        }
+        else {
+            Segment other2;
+            other2 = direction==other.direction?other:other.getReverse();
+            if(contains(other2.start)){
+                if(contains(other2.end)){
+                    return direction.isVertical()?pointsBetweenCount(other2.getY(), other2.getY2()):
+                            pointsBetweenCount(other2.getX(), other2.getX2());
+                }
+                else{
+                    return direction.isVertical()?pointsBetweenCount(other2.getY(), getY2()):
+                            pointsBetweenCount(other2.getX(), getX2());
+                }
+            }
+            else{
+                return direction.isVertical()?pointsBetweenCount(getY(), other2.getY2()):
+                        pointsBetweenCount(getX(), other2.getX2());
+            }
+        }
+    }
+
     public Segment getReverse(){
         return new Segment(end, length, direction.reverse());
     }
@@ -350,5 +411,29 @@ public class Segment {
         return points;
     }
 
+    private int pointsBetweenCount(int a, int b){
+        return a>b ? a-b + 1 : b-a + 1;
+    }
 
+    public void moveByVector(int x, int y){
+        start.x += x;
+        end.x += x;
+        start.y += y;
+        end.y += y;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Segment segment = (Segment) o;
+        return length == segment.length &&
+                start.equals(segment.start) &&
+                direction == segment.direction;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(length, start, direction);
+    }
 }

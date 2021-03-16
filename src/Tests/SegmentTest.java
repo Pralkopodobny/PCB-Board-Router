@@ -243,9 +243,25 @@ public class SegmentTest {
                 new Point[]{new Point(20, 10)},//30
                 new Point[]{new Point(20, 10)},//31
         };
+        int[] resultsCount = new int[]{
+                1, 0, 0, 0,
+                1, 1,
+                0, 0, 0,
+                1,
+                0, 0, 0,
+                6, 1,
+                0, 0, 0,
+                6,
+                1, 1, 1,
+                6, 6,
+                1, 1, 1,
+                6, 6,
+                1, 1, 1
+        };
         for(int i = 0; i < pairsOfSegments.length; i++){
             boolean good = false;
             Point[] actual = pairsOfSegments[i][0].collisionPoints(pairsOfSegments[i][1]);
+            int actualCount = pairsOfSegments[i][0].collisionPointsCount(pairsOfSegments[i][1]);
             if(results[i] == null && actual == null){
                 good = true;
             }
@@ -254,10 +270,12 @@ public class SegmentTest {
                 good = Arrays.equals(actual, results[i]);
             }
             assertTrue("Test kolizji: " + i, good);
+            assertEquals("Test zliczania kolizji: " + i + "dla" + pairsOfSegments[i][0].toString() + "i " + pairsOfSegments[i][1], resultsCount[i], actualCount);
         }
         for(int i = 0; i < pairsOfSegments.length; i++){
             boolean good = false;
             Point[] actual = pairsOfSegments[i][1].collisionPoints(pairsOfSegments[i][0]);
+            int actualCount = pairsOfSegments[i][1].collisionPointsCount(pairsOfSegments[i][0]);
             if(results[i] == null && actual == null){
                 good = true;
             }
@@ -266,8 +284,58 @@ public class SegmentTest {
                 good = Arrays.equals(actual, results[i]);
             }
             assertTrue("Test odwrotnej kolizji: " + i, good);
+            assertEquals("Test zliczania odwrotnej kolizji: " + i, resultsCount[i], actualCount);
         }
 
     }
+    @Test
+    @DisplayName("Creating point from a to b should work")
+    public void testStaticSegmentFabricateMethod(){
+        Point[][] pairsOfPointsVertical = new Point[][]{
+                new Point[] {new Point(5, 5), new Point(5, 10)},
+                new Point[] {new Point(5, 5), new Point(5, 0)},
+                new Point[] {new Point(5, 5), new Point(5, 5)},
+        };
+        Point[][] pairsOfPointsHorizontal = new Point[][]{
+                new Point[] {new Point(5, 5), new Point(10, 5)},
+                new Point[] {new Point(5, 5), new Point(0, 5)},
+                new Point[] {new Point(5, 5), new Point(5, 5)},
+        };
+        Segment[] verticalSegments = new Segment[]{
+                new Segment(5, 5, 5, Segment.Direction.DOWN),
+                new Segment(5, 5, 5, Segment.Direction.UP),
+                null
+        };
+        Segment[] reversedVerticalSegments = new Segment[]{
+                new Segment(5, 10, 5, Segment.Direction.UP),
+                new Segment(5, 0, 5, Segment.Direction.DOWN),
+                null
+        };
+        Segment[] horizontalSegments = new Segment[]{
+                new Segment(5, 5, 5, Segment.Direction.RIGHT),
+                new Segment(5, 5, 5, Segment.Direction.LEFT),
+                null
+        };
+        Segment[] reversedHorizontalSegments = new Segment[]{
+                new Segment(10, 5, 5, Segment.Direction.LEFT),
+                new Segment(0, 5, 5, Segment.Direction.RIGHT),
+                null
+        };
+
+        for(int i = 0; i < verticalSegments.length; i++){
+            Segment segment = Segment.getVerticalSegment(pairsOfPointsVertical[i][0], pairsOfPointsVertical[i][1]);
+            Segment revercedSegment = Segment.getVerticalSegment(pairsOfPointsVertical[i][1], pairsOfPointsVertical[i][0]);
+            assertEquals("Vertical segments are equal: " + i, verticalSegments[i], segment);
+            assertEquals("Reversed vertical segments are equal: " + i, reversedVerticalSegments[i], revercedSegment);
+        }
+
+        for(int i = 0; i < horizontalSegments.length; i++){
+            Segment segment = Segment.getHorizontalSegment(pairsOfPointsHorizontal[i][0], pairsOfPointsHorizontal[i][1]);
+            Segment revercedSegment = Segment.getHorizontalSegment(pairsOfPointsHorizontal[i][1], pairsOfPointsHorizontal[i][0]);
+            assertEquals("Vertical segments are equal: " + i, horizontalSegments[i], segment);
+            assertEquals("Reversed vertical segments are equal: " + i, reversedHorizontalSegments[i], revercedSegment);
+        }
+    }
+
 
 }
