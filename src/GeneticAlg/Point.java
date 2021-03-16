@@ -41,8 +41,4 @@ public class Point {
     public boolean onBoard(int maxX, int maxY){
         return x<=maxX && x >=0 && y<=maxY && y >=0;
     }
-
-    public static void sortVertical(){
-
-    }
 }
