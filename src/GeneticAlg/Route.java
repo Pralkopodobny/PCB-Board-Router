@@ -77,7 +77,7 @@ public class Route {
         }
 
         while(segments.size() == 0 || !segments.get(segments.size() - 1).getEnd().equals(route.end)){
-            if(!solve(segments, route.end)) segments.remove(segments.size() - 1);
+            if(!solve(segments, route.end, route.start)) segments.remove(segments.size() - 1);
         }
         if(segments.size() == 0){
             Segment[] xd = connectPointsDown(x, y, x2, y2);
@@ -106,9 +106,15 @@ public class Route {
         return true;
     }
 
-    private static boolean solve(ArrayList<Segment> segments, Point end){
-        Segment last = segments.get(segments.size() - 1);
-        Point lastE = last.getEnd();
+    private static boolean solve(ArrayList<Segment> segments, Point end, Point start){
+        Point lastE;
+        if(segments.size() == 0){
+            lastE = start;
+        }
+        else{
+            Segment last = segments.get(segments.size() - 1);
+            lastE = last.getEnd();
+        }
         Segment[] yeet = connectPointsUp(lastE.x, lastE.y, end.x, end.y);
         if(canAdd(segments, yeet)){
             segments.addAll(Arrays.asList(yeet));
@@ -331,7 +337,7 @@ public class Route {
     }
     public void advancedMutation(int index, int force, int cut){
         Segment mutated = segments.get(index), connector, newNext, next;
-        next = index<segments.size() - 1?segments.get(segments.size() - 1):null;
+        next = index<segments.size() - 1?segments.get(index + 1):null;
         Segment[] newMutated = mutated.getSplit(cut);
         if(mutated.getDirection().isVertical()){
             newMutated[1].moveByVector(force, 0);
@@ -403,6 +409,27 @@ public class Route {
         r.start = new Point(segments.get(0).getStart());
         r.end = new Point(segments.get(segments.size() - 1).getEnd());
         return r;
+    }
+
+    public void mutate(){
+        int index = rng.nextInt(segments.size());
+        int roll = rng.nextInt(10);
+        int force = (rng.nextInt(BoardConfig.MAX_MUTATION_FORCE) + 1) * (rng.nextBoolean()?1:-1);
+        int length = segments.get(index).getLength();
+        if(length>1 && roll >= BoardConfig.SIMPLE_MUTATION_CHANCE){
+            int cut = length==2?1:rng.nextInt(length - 2) + 1;
+            advancedMutation(index, force, cut);
+        }
+        else{
+            simpleMutation(index, force);
+        }
+    }
+
+    public int correct(){
+        for(int i = 1; i < segments.size() - 1; i++){
+            if(!segments.get(i).getEnd().equals(segments.get(i+1).getStart())) return i;
+        }
+        return -1;
     }
 }
 

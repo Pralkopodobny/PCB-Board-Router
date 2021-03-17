@@ -418,6 +418,44 @@ public class RouteTest {
         r.advancedMutation(index, force, cut);
         assertEquals("Advanced mutation test should work #6", actual, r.segments);
 
+        segments = new ArrayList<>(List.of(
+                new Segment(5, 5, 10, Segment.Direction.UP),
+                new Segment(5, -5, 15, Segment.Direction.RIGHT),
+                new Segment(20, -5, 10, Segment.Direction.UP)
+        ));
+        index = 1;
+        force = -3;
+        cut = 5;
+        actual = new ArrayList<>(List.of(
+                new Segment(5, 5, 10, Segment.Direction.UP),
+                new Segment(5, -5, 5, Segment.Direction.RIGHT),
+                new Segment(10, -5, 3, Segment.Direction.UP),
+                new Segment(10, -8, 10, Segment.Direction.RIGHT),
+                new Segment(20, -8, 7, Segment.Direction.UP)
+        ));
+        r = Route.createTestRoute(segments);
+        r.advancedMutation(index, force, cut);
+        assertEquals("Advanced mutation test should work #7", actual, r.segments);
+
+        segments = new ArrayList<>(List.of(
+                new Segment(5, 5, 10, Segment.Direction.RIGHT),
+                new Segment(15, 5, 15, Segment.Direction.UP),
+                new Segment(15, -10, 10, Segment.Direction.RIGHT)
+        ));
+        index = 0;
+        force = -3;
+        cut = 5;
+        actual = new ArrayList<>(List.of(
+                new Segment(5, 5, 5, Segment.Direction.RIGHT),
+                new Segment(10, 5, 3, Segment.Direction.UP),
+                new Segment(10, 2, 5, Segment.Direction.RIGHT),
+                new Segment(15, 2, 12, Segment.Direction.UP),
+                new Segment(15, -10, 10, Segment.Direction.RIGHT)
+        ));
+        r = Route.createTestRoute(segments);
+        r.advancedMutation(index, force, cut);
+        assertEquals("Advanced mutation test should work #2", actual, r.segments);
+
     }
 
 }
