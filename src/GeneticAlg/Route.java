@@ -328,6 +328,40 @@ public class Route {
             segments.add(newNext);
         }
         fix();
+    }
+    public void advancedMutation(int index, int force, int cut){
+        Segment mutated = segments.get(index), connector, newNext, next;
+        next = index<segments.size() - 1?segments.get(segments.size() - 1):null;
+        Segment[] newMutated = mutated.getSplit(cut);
+        if(mutated.getDirection().isVertical()){
+            newMutated[1].moveByVector(force, 0);
+            connector = Segment.getHorizontalSegment(newMutated[0].getEnd(), newMutated[1].getStart());
+        }
+        else {
+            newMutated[1].moveByVector(0, force);
+            connector = Segment.getVerticalSegment(newMutated[0].getEnd(), newMutated[1].getStart());
+        }
+        if(next == null){
+            newNext = mutated.getDirection().isVertical()?
+                    Segment.getHorizontalSegment(newMutated[1].getEnd(), end):
+                    Segment.getVerticalSegment(newMutated[1].getEnd(), end);
+        }
+        else{
+            newNext = next.getDirection().isVertical()?
+                    Segment.getVerticalSegment(newMutated[1].getEnd(), next.getEnd()):
+                    Segment.getHorizontalSegment(newMutated[1].getEnd(), next.getEnd());
+        }
+        segments.remove(index);
+        segments.add(index,newMutated[0]);
+        segments.add(index + 1, connector);
+        segments.add(index + 2, newMutated[1]);
+        if(next != null){
+            segments.remove(index + 3);
+        }
+        if(newNext != null){
+            segments.add(index + 3, newNext);
+        }
+        fix();
 
     }
 
