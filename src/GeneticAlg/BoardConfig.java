@@ -17,6 +17,7 @@ public class BoardConfig {
     public final static int SEGMENT_WEIGHT = 1;
     public final static int LENGTH_WEIGHT =1;
     public final static int MAX_MUTATION_FORCE = 5;
+    public final static int SIMPLE_MUTATION_CHANCE = 1;
 
 
     public BoardConfig(String filename) throws FileNotFoundException {
