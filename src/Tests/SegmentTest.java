@@ -337,5 +337,40 @@ public class SegmentTest {
         }
     }
 
+    @Test
+    @DisplayName("Spliting segments should work")
+    public void testSplit(){
+        Segment[] segments = new Segment[]{
+                new Segment(15, 10, 10, Segment.Direction.LEFT),
+                new Segment(15, 10, 10, Segment.Direction.UP),
+                new Segment(15, 10, 10, Segment.Direction.DOWN),
+                new Segment(15, 10, 10, Segment.Direction.RIGHT),
+        };
+        Segment[][] actual = new Segment[][]{
+                new Segment[]{
+                        new Segment(15, 10, 4, Segment.Direction.LEFT),
+                        new Segment(11, 10, 6, Segment.Direction.LEFT)
+                },
+                new Segment[]{
+                        new Segment(15, 10, 4, Segment.Direction.UP),
+                        new Segment(15, 6, 6, Segment.Direction.UP)
+                },
+                new Segment[]{
+                        new Segment(15, 10, 4, Segment.Direction.DOWN),
+                        new Segment(15, 14, 6, Segment.Direction.DOWN)
+                },
+                new Segment[]{
+                        new Segment(15, 10, 4, Segment.Direction.RIGHT),
+                        new Segment(19, 10, 6, Segment.Direction.RIGHT)
+                }
+        };
+        for(int i = 0; i < segments.length; i++){
+            Segment[] result = segments[i].getSplit(4);
+            for(int j = 0; j < 2; j++){
+                assertEquals("Spliting test #"+i+"."+j, actual[i][j], result[j]);
+            }
+        }
+    }
+
 
 }

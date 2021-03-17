@@ -371,6 +371,30 @@ public class Segment {
         }
     }
 
+    public Segment[] getSplit(int cut){
+        if(cut == 0 || cut >= length) throw new IllegalArgumentException();
+        Segment[] newSegments = new Segment[2];
+        switch(direction){
+            case LEFT:
+                newSegments[0] = new Segment(start.x, start.y, cut, Direction.LEFT);
+                newSegments[1] = new Segment(start.x - cut, start.y, length - cut, Direction.LEFT);
+                break;
+            case RIGHT:
+                newSegments[0] = new Segment(start.x, start.y, cut, Direction.RIGHT);
+                newSegments[1] = new Segment(start.x + cut, start.y, length - cut, Direction.RIGHT);
+                break;
+            case DOWN:
+                newSegments[0] = new Segment(start.x, start.y, cut, Direction.DOWN);
+                newSegments[1] = new Segment(start.x, start.y + cut, length - cut, Direction.DOWN);
+                break;
+            default:
+                newSegments[0] = new Segment(start.x, start.y, cut, Direction.UP);
+                newSegments[1] = new Segment(start.x, start.y - cut, length - cut, Direction.UP);
+                break;
+        }
+        return newSegments;
+    }
+
     public Segment getReverse(){
         return new Segment(end, length, direction.reverse());
     }
