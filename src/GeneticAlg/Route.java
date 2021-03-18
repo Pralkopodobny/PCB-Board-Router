@@ -281,6 +281,14 @@ public class Route {
         return count;
     }
 
+    int selfCollisions(){
+        int total = 0;
+        for(int i = 0; i < segments.size() - 2; i++){
+            total += segments.get(i).collisionPointsCount(segments.get(i+2));
+        }
+        return total;
+    }
+
     public void simpleMutation(int index, int force){
         Segment mutated = segments.get(index), newPrev, newNext;
         if(mutated.getDirection().isVertical()){
@@ -413,7 +421,7 @@ public class Route {
 
     public void mutate(){
         int index = rng.nextInt(segments.size());
-        int roll = rng.nextInt(10);
+        int roll = rng.nextInt(100);
         int force = (rng.nextInt(BoardConfig.MAX_MUTATION_FORCE) + 1) * (rng.nextBoolean()?1:-1);
         int length = segments.get(index).getLength();
         if(length>1 && roll >= BoardConfig.SIMPLE_MUTATION_CHANCE){
