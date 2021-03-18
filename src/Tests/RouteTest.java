@@ -99,6 +99,7 @@ public class RouteTest {
                 new Segment(18, 5, 15, Segment.Direction.UP),
                 new Segment(18, -10, 7, Segment.Direction.RIGHT)
         ));
+
         Route r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #1", actual, r.segments);
@@ -181,6 +182,7 @@ public class RouteTest {
                 new Segment(5, 5, 15, Segment.Direction.UP),
                 new Segment(5, -10, 4, Segment.Direction.RIGHT)
         ));
+        System.out.println(6);
         r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #6", actual, r.segments);
@@ -196,6 +198,7 @@ public class RouteTest {
         actual = new ArrayList<>(List.of(
                 new Segment(5, 5, 15, Segment.Direction.UP)
         ));
+        System.out.println(7);
         r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #7", actual, r.segments);
@@ -214,6 +217,7 @@ public class RouteTest {
                 new Segment(15, 8, 18, Segment.Direction.UP),
                 new Segment(15, -10, 5, Segment.Direction.LEFT)
         ));
+        System.out.println(8);
         r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #8", actual, r.segments);
@@ -232,6 +236,7 @@ public class RouteTest {
                 new Segment(15, 2, 12, Segment.Direction.UP),
                 new Segment(15, -10, 5, Segment.Direction.LEFT)
         ));
+        System.out.println(9);
         r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #9", actual, r.segments);
@@ -250,6 +255,7 @@ public class RouteTest {
                 new Segment(15, -7, 5, Segment.Direction.LEFT),
                 new Segment(10, -7, 3, Segment.Direction.UP)
         ));
+        System.out.println(10);
         r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #10", actual, r.segments);
@@ -268,6 +274,7 @@ public class RouteTest {
                 new Segment(15, -13, 5, Segment.Direction.LEFT),
                 new Segment(10, -13, 3, Segment.Direction.DOWN)
         ));
+        System.out.println(11);
         r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #11", actual, r.segments);
@@ -282,7 +289,7 @@ public class RouteTest {
                 new Segment(5, 8, 10, Segment.Direction.RIGHT),
                 new Segment(15, 8, 3, Segment.Direction.UP)
         ));
-
+        System.out.println(12);
         r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #12", actual, r.segments);
@@ -297,7 +304,7 @@ public class RouteTest {
                 new Segment(5, 2, 10, Segment.Direction.RIGHT),
                 new Segment(15, 2, 3, Segment.Direction.DOWN)
         ));
-
+        System.out.println(13);
         r = Route.createTestRoute(segments);
         r.simpleMutation(index, force);
         assertEquals("Simple mutation test should work #13", actual, r.segments);

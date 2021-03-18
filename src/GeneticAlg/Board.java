@@ -14,7 +14,7 @@ public class Board {
     private static final Color[] colors = {Color.BLACK, Color.BLUE, Color.RED, Color.GREEN, Color.GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK};
     private BoardConfig info;
     private ArrayList<Route> routes = new ArrayList<>();
-    private boolean[][] collided;
+    public boolean[][] collided;
     public Board(BoardConfig info){
         this.info = info;
         var intRoutes = info.getRoutes();
@@ -35,6 +35,7 @@ public class Board {
         for(var route : other.routes){
             routes.add(new Route(route));
         }
+        this.collided = other.collided.clone();
     }
 
     @Override
@@ -99,10 +100,12 @@ public class Board {
         return sum;
     }
 
-    public void cross(int index, Board other){
-        Route r = routes.get(index);
-        routes.set(index, other.routes.get(index));
-        other.routes.set(index, r);
+    public void cross(int number, Board other){
+        for (int i = 0; i <number; i++){
+            Route r = routes.get(i);
+            routes.set(i, other.routes.get(i));
+            other.routes.set(i, r);
+        }
     }
 
     public void mutate(int index){

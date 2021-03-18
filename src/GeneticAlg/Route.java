@@ -290,7 +290,7 @@ public class Route {
     }
 
     public void simpleMutation(int index, int force){
-        Segment mutated = segments.get(index), newPrev, newNext;
+        Segment mutated = new Segment(segments.get(index)), newPrev, newNext;
         if(mutated.getDirection().isVertical()){
             mutated.moveByVector(force, 0);
         }
@@ -298,9 +298,6 @@ public class Route {
             mutated.moveByVector(0, force);
         }
         Segment prev = index==0?null:segments.get(index - 1);
-        newPrev = prev==null||prev.getStart().equals(mutated.getStart())?null:
-                (prev.getDirection().isVertical()?Segment.getVerticalSegment(prev.getStart(), mutated.getStart()):
-                        Segment.getHorizontalSegment(prev.getStart(), mutated.getStart()));
         if(prev == null){
             newPrev = mutated.getDirection().isVertical()?
                     Segment.getHorizontalSegment(start, mutated.getStart()):
@@ -322,6 +319,9 @@ public class Route {
                     Segment.getVerticalSegment(mutated.getEnd(), next.getEnd()):
                     Segment.getHorizontalSegment(mutated.getEnd(), next.getEnd());
         }
+        if(newPrev != null && newPrev.validate()) return;
+        if(newNext != null && newNext.validate()) return;
+        segments.set(index, mutated);
         int offset = 0;
         if(prev != null){
             segments.remove(index - 1);
@@ -344,7 +344,7 @@ public class Route {
         fix();
     }
     public void advancedMutation(int index, int force, int cut){
-        Segment mutated = segments.get(index), connector, newNext, next;
+        Segment mutated = new Segment(segments.get(index)), connector, newNext, next;
         next = index<segments.size() - 1?segments.get(index + 1):null;
         Segment[] newMutated = mutated.getSplit(cut);
         if(mutated.getDirection().isVertical()){
@@ -365,6 +365,9 @@ public class Route {
                     Segment.getVerticalSegment(newMutated[1].getEnd(), next.getEnd()):
                     Segment.getHorizontalSegment(newMutated[1].getEnd(), next.getEnd());
         }
+        if(newNext != null && newNext.validate()) return;
+        if(newMutated[0] != null && newMutated[0].validate()) return;
+        if(newMutated[1] != null && newMutated[1].validate()) return;
         segments.remove(index);
         segments.add(index,newMutated[0]);
         segments.add(index + 1, connector);

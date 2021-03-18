@@ -12,7 +12,9 @@ import javafx.stage.Stage;
 import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -24,10 +26,11 @@ public class Main extends Application {
         BoardConfig config;
         try{
             config = new BoardConfig("Assets/Zad3.txt");
-            Board b = new Board(config);
-            System.out.println(b.bad());
-            Group group = b.drawLines();
             Population p = new Population(config);
+            //Board b = p.runRoulette(10000);
+            Board b = p.runTournament(8000);
+            System.out.println(b.toString());
+            Group group = b.drawLines();
 
             Scene scene = new Scene(group, 1000, 1000);
             primaryStage.setScene(scene);
@@ -37,8 +40,6 @@ public class Main extends Application {
             System.out.println("No config file");
             System.exit(404);
         }
-
-        System.out.println(Line2D.linesIntersect(1, 1, 1, 3, 2, 2, 5, 2));
 
         primaryStage.show();
 

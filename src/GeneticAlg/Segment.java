@@ -460,4 +460,8 @@ public class Segment {
     public int hashCode() {
         return Objects.hash(length, start, direction);
     }
+
+    public boolean validate() {
+        return !end.equals(createEnd());
+    }
 }

@@ -12,13 +12,16 @@ public class BoardConfig {
     private ArrayList<int[]> routes = new ArrayList<>();
     public final static int PIXEL_SIZE = 20;
     public final static int RADIUS = 2;
-    public final static int COLLISION_WEIGHT = 10;
-    public final static int OUT_OF_BOUNDS_WEIGHT = 10;
+    public final static int COLLISION_WEIGHT = 100;
+    public final static int OUT_OF_BOUNDS_WEIGHT = 1000;
     public final static int SEGMENT_WEIGHT = 1;
     public final static int LENGTH_WEIGHT =1;
     public final static int MAX_MUTATION_FORCE = 5;
     public final static int SIMPLE_MUTATION_CHANCE = 10;
-    public final static int SELF_COLLISION_WEIGHT = 30;
+    public final static int SELF_COLLISION_WEIGHT = 100;
+    public final static int MUTATION_PROBABILITY = 20;
+    public final static int CROSSOVER_PROBABILITY = 30;
+    public final static int TOURNAMENT_SIZE = 10;
 
 
     public BoardConfig(String filename) throws FileNotFoundException {
