@@ -2,22 +2,28 @@ package GeneticAlg;
 
 import javafx.util.Pair;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Population {
-    private final static int NUMBER_OF_BOARDS = 300;
+    private final static int NUMBER_OF_BOARDS = 60;
     private BoardConfig config;
     private ArrayList<Board> boards = new ArrayList<>(NUMBER_OF_BOARDS);
     private int[][] scale;
     private int[] misfits;
+    private int[] realMisfits;
     private double[] fitness;
     private double[] sumOfFitness;
     private int bestMisfit, bestIndex;
     private int lastBestMisfit = Integer.MAX_VALUE;
     private Random rng = new Random();
+    private BufferedWriter writer;
+    private final static String FILENAME = "Wyniki1.csv";
 
-    public Population(BoardConfig config){
+    public Population(BoardConfig config, String filename){
         this.config = config;
         for(int i = 0; i < NUMBER_OF_BOARDS; i++){
             boards.add(new Board(config));
@@ -27,8 +33,20 @@ public class Population {
             Arrays.fill(x, 30);
         }
         misfits = new int[NUMBER_OF_BOARDS];
+        realMisfits = new int[NUMBER_OF_BOARDS];
         fitness = new double[NUMBER_OF_BOARDS];
         sumOfFitness = new double[NUMBER_OF_BOARDS];
+        try {
+            writer = new BufferedWriter(new FileWriter(filename));
+            for(int i = 0; i < NUMBER_OF_BOARDS - 1; i++){
+                writer.write("Misfits " + (i + 1) + ",");
+            }
+            writer.write("Misfits " + (NUMBER_OF_BOARDS));
+            writer.newLine();
+        }
+        catch (IOException e){
+            System.exit(404);
+        }
     }
 
     public void eval(){
@@ -37,6 +55,27 @@ public class Population {
         bestIndex = 0;
         for(int i = 1; i < NUMBER_OF_BOARDS; i++){
             misfits[i] = boards.get(i).bad(scale);
+            if(misfits[i] < bestMisfit) {
+                bestMisfit = misfits[i];
+                bestIndex = i;
+            }
+        }
+
+        for(int i = 0; i < misfits.length; i++){
+            fitness[i] = (double) bestMisfit / misfits[i];
+        }
+    }
+    public void realEval(){
+        for(int i = 0; i < NUMBER_OF_BOARDS; i++){
+            realMisfits[i] = boards.get(i).bad();
+        }
+    }
+    public void evalNoScale(){
+        misfits[0] = boards.get(0).bad();
+        bestMisfit = misfits[0];
+        bestIndex = 0;
+        for(int i = 1; i < NUMBER_OF_BOARDS; i++){
+            misfits[i] = boards.get(i).bad();
             if(misfits[i] < bestMisfit) {
                 bestMisfit = misfits[i];
                 bestIndex = i;
@@ -104,6 +143,8 @@ public class Population {
     public Board runRoulette(int iterations){
         for(int i = 0; i < iterations; i++){
             evalRoulette();
+            realEval();
+            writeToFile();
             int actualBestMisfit = boards.get(bestIndex).bad();
             if(lastBestMisfit > actualBestMisfit){
                 increaseScale();
@@ -138,12 +179,29 @@ public class Population {
             }
             boards = newBoards;
         }
+        close();
+        return boards.get(bestIndex);
+    }
+    public Board losulosu(int iterations){
+        for(int j = 0; j <iterations; j++) {
+            System.out.println(j);
+            evalNoScale();
+            realEval();
+            writeToFile();
+            boards.set(0, boards.get(bestIndex));
+            for (int i = 1; i < boards.size(); i++) {
+                boards.set(i, new Board(config));
+            }
+        }
+        close();
         return boards.get(bestIndex);
     }
 
     public Board runTournament(int iterations){
         for(int i = 0; i < iterations; i++){
             eval();
+            realEval();
+            writeToFile();
             int actualBestMisfit = boards.get(bestIndex).bad();
             if(lastBestMisfit > actualBestMisfit){
                 increaseScale();
@@ -177,7 +235,9 @@ public class Population {
                     newBoards.add(b);
             }
             boards = newBoards;
+
         }
+        close();
         return boards.get(bestIndex);
     }
 
@@ -188,6 +248,30 @@ public class Population {
             for(int j = 0; j <scale[i].length; j++){
                 if(b.collided[i][j]) scale[i][j]++;
             }
+        }
+    }
+
+    private void writeToFile(){
+        try {
+            for (int i = 0; i < NUMBER_OF_BOARDS - 1; i++) {
+                writer.write(Integer.toString(realMisfits[i]) + ',');
+            }
+            writer.write(Integer.toString(realMisfits[NUMBER_OF_BOARDS - 1]));
+            writer.newLine();
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            System.exit(22);
+        }
+
+    }
+    private void close(){
+        try{
+            writer.close();
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            System.exit(22);
         }
     }
 
