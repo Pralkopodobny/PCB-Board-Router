@@ -1,6 +1,9 @@
 package GeneticAlg;
 
+import GeneticAlg.Comparators.TestManager;
 import javafx.util.Pair;
+import junit.framework.Test;
+import junit.framework.TestResult;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -20,11 +23,13 @@ public class Population {
     private int bestMisfit, bestIndex;
     private int lastBestMisfit = Integer.MAX_VALUE;
     private Random rng = new Random();
-    private BufferedWriter writer;
-    private final static String FILENAME = "Wyniki1.csv";
+    private TestManager testManager;
+    private int testNumb;
 
-    public Population(BoardConfig config, String filename){
+    public Population(BoardConfig config, String filename, int testNumber, TestManager testManager){
         this.config = config;
+        this.testNumb = testNumber;
+        this.testManager = testManager;
         for(int i = 0; i < NUMBER_OF_BOARDS; i++){
             boards.add(new Board(config));
         }
@@ -36,17 +41,6 @@ public class Population {
         realMisfits = new int[NUMBER_OF_BOARDS];
         fitness = new double[NUMBER_OF_BOARDS];
         sumOfFitness = new double[NUMBER_OF_BOARDS];
-        try {
-            writer = new BufferedWriter(new FileWriter(filename));
-            for(int i = 0; i < NUMBER_OF_BOARDS - 1; i++){
-                writer.write("Misfits " + (i + 1) + ",");
-            }
-            writer.write("Misfits " + (NUMBER_OF_BOARDS));
-            writer.newLine();
-        }
-        catch (IOException e){
-            System.exit(404);
-        }
     }
 
     public void eval(){
@@ -144,7 +138,7 @@ public class Population {
         for(int i = 0; i < iterations; i++){
             evalRoulette();
             realEval();
-            writeToFile();
+            uploadBest(i);
             int actualBestMisfit = boards.get(bestIndex).bad();
             if(lastBestMisfit > actualBestMisfit){
                 increaseScale();
@@ -179,21 +173,18 @@ public class Population {
             }
             boards = newBoards;
         }
-        close();
         return boards.get(bestIndex);
     }
     public Board losulosu(int iterations){
         for(int j = 0; j <iterations; j++) {
-            System.out.println(j);
             evalNoScale();
             realEval();
-            writeToFile();
+            uploadBest(j);
             boards.set(0, boards.get(bestIndex));
             for (int i = 1; i < boards.size(); i++) {
                 boards.set(i, new Board(config));
             }
         }
-        close();
         return boards.get(bestIndex);
     }
 
@@ -201,7 +192,7 @@ public class Population {
         for(int i = 0; i < iterations; i++){
             eval();
             realEval();
-            writeToFile();
+            uploadBest(i);
             int actualBestMisfit = boards.get(bestIndex).bad();
             if(lastBestMisfit > actualBestMisfit){
                 increaseScale();
@@ -237,7 +228,6 @@ public class Population {
             boards = newBoards;
 
         }
-        close();
         return boards.get(bestIndex);
     }
 
@@ -251,28 +241,9 @@ public class Population {
         }
     }
 
-    private void writeToFile(){
-        try {
-            for (int i = 0; i < NUMBER_OF_BOARDS - 1; i++) {
-                writer.write(Integer.toString(realMisfits[i]) + ',');
-            }
-            writer.write(Integer.toString(realMisfits[NUMBER_OF_BOARDS - 1]));
-            writer.newLine();
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            System.exit(22);
-        }
+    private void uploadBest(int iter){
+        testManager.setResult(testNumb, iter, realMisfits[bestIndex]);
+    }
 
-    }
-    private void close(){
-        try{
-            writer.close();
-        }
-        catch (IOException e){
-            e.printStackTrace();
-            System.exit(22);
-        }
-    }
 
 }
