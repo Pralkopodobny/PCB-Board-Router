@@ -20,8 +20,8 @@ public class BoardConfig {
     public final static int SIMPLE_MUTATION_CHANCE = 10;
     public final static int SELF_COLLISION_WEIGHT = 100;
     public final static int MUTATION_PROBABILITY = 20;
-    public final static int CROSSOVER_PROBABILITY = 30;
-    public final static int TOURNAMENT_SIZE = 10;
+    public final static int CROSSOVER_PROBABILITY = 5;
+    public final static int TOURNAMENT_SIZE = 12;
 
 
     public BoardConfig(String filename) throws FileNotFoundException {
